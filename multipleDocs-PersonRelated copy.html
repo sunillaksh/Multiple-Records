@@ -1,0 +1,111 @@
+<div class="container" id="personDocumentContainer">
+    <div id="personDocumentRows">
+        <div class="row mb-2" data-row-index="0">
+            <div class="col-md-3">
+                <label for="inputPersonDocName0" class="form-label">Document Name</label>
+                <input type="text" class="form-control document-name-input" id="inputPersonDocName0" name="inputPersonDocName0">
+            </div>
+            <div class="col-md-3">
+                <label for="inputPersonDocNo0" class="form-label">Document Number</label>
+                <input type="text" class="form-control" id="inputPersonDocNo0" name="inputPersonDocNo0">
+            </div>
+            <div class="col-md-3">
+                <label for="inputPersonDocFile0" class="form-label">Upload File</label>
+                <input type="file" class="form-control" id="inputPersonDocFile0" name="inputPersonDocFile0">
+            </div>
+            <div class="col-md-1 d-flex align-items-end">
+                <button type="button" class="btn btn-primary personDocAddButton">+</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function(){
+        var documentNames = [
+            "Aadhaar Card", 
+            "Bank Statements", 
+            "Driving License", 
+            "Form 16", 
+            "Income Tax Returns", 
+            "PAN Card", 
+            "Passport", 
+            "Passport-Sized Photographs", 
+            "Rent Agreement", 
+            "Salary Slips", 
+            "Utility Bills", 
+            "Voter ID"
+        ];
+
+        // Function to initialize autocomplete for a specific input field
+        function initAutocomplete(input) {
+            $(input).autocomplete({
+                source: documentNames,
+                minLength: 0 // Show list when input field is clicked
+            }).focus(function() {
+                $(this).autocomplete("search", ""); // Show list when input field is clicked
+            });
+        }
+
+        // Initialize autocomplete for the first input field
+        initAutocomplete(".document-name-input");
+
+        // Add event listener to dynamically update autocomplete source for each input field
+        $(document).on("focus", ".document-name-input", function() {
+            initAutocomplete(this);
+        });
+    });
+</script>
+
+
+
+
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const container = document.getElementById('personDocumentContainer');
+
+        function addNewPersonRow() {
+            const lastRowIndex = parseInt(container.querySelector('[data-row-index]:last-of-type').getAttribute('data-row-index'));
+            const newRow = container.querySelector('[data-row-index="0"]').cloneNode(true);
+
+            // Update the data-row-index attribute
+            newRow.setAttribute('data-row-index', lastRowIndex + 1);
+
+            // Clear values in the new row
+            newRow.querySelector('[name^="inputPersonDocName"]').value = '';
+            newRow.querySelector('[name^="inputPersonDocNo"]').value = '';
+            newRow.querySelector('[name^="inputPersonDocFile"]').value = '';
+
+            // Update the IDs and names of the inputs in the new row
+            const inputs = newRow.querySelectorAll('input');
+            inputs.forEach(function (input) {
+                const oldId = input.getAttribute('id');
+                const oldName = input.getAttribute('name');
+                const newId = oldId.replace(/\d+/, lastRowIndex + 1);
+                const newName = oldName.replace(/\d+/, lastRowIndex + 1);
+                input.setAttribute('id', newId);
+                input.setAttribute('name', newName);
+            });
+
+            // Replace the button with a remove button
+            const addButtonInNewRow = newRow.querySelector('.personDocAddButton');
+            addButtonInNewRow.innerHTML = '-';
+            addButtonInNewRow.classList.remove('personDocAddButton');
+            addButtonInNewRow.classList.add('personDocRemoveButton');
+            addButtonInNewRow.classList.add('btn-danger'); // Add btn-danger class
+
+            container.querySelector('#personDocumentRows').appendChild(newRow);
+        }
+
+        container.addEventListener('click', function (event) {
+            const target = event.target;
+            if (target.classList.contains('personDocAddButton')) {
+                addNewPersonRow();
+            } else if (target.classList.contains('personDocRemoveButton')) {
+                target.closest('.row').remove();
+            }
+        });
+    });
+</script>
