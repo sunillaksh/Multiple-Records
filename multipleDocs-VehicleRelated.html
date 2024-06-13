@@ -1,0 +1,100 @@
+<div class="container" id="vehicleDocumentContainer">
+    <div id="vehicleDocumentRows">
+        <div class="row mb-2" data-row-index="0">
+            <div class="col-md-3">
+                <label for="inputVehicleDocName0" class="form-label">Vehicle Document </label>
+                <input type="text" class="form-control vehicle-doc-name-input" id="inputVehicleDocName0" name="inputVehicleDocName0">
+            </div>
+            <div class="col-md-3">
+                <label for="inputVehicleDocNo0" class="form-label">Document Number</label>
+                <input type="text" class="form-control" id="inputVehicleDocNo0" name="inputVehicleDocNo0">
+            </div>
+            <div class="col-md-3">
+                <label for="inputVehicleDocFile0" class="form-label">Upload File</label>
+                <input type="file" class="form-control" id="inputVehicleDocFile0" name="inputVehicleDocFile0">
+            </div>
+            <div class="col-md-1 d-flex align-items-end">
+                <button type="button" class="btn btn-primary vehicleDocAddButton">+</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function(){
+        var documentNames = [
+            "Registration Certificate (RC)", 
+            "Insurance Papers", 
+            "Pollution Under Control (PUC) Certificate", 
+            "Form 29", 
+            "Form 30", 
+            "NOC (No Objection Certificate)", 
+        ];
+
+        // Function to initialize autocomplete for a specific input field
+        function initAutocomplete(input) {
+            $(input).autocomplete({
+                source: documentNames,
+                minLength: 0 // Show list when input field is clicked
+            }).focus(function() {
+                $(this).autocomplete("search", ""); // Show list when input field is clicked
+            });
+        }
+
+        // Initialize autocomplete for the first input field
+        initAutocomplete(".vehicle-doc-name-input");
+
+        // Add event listener to dynamically update autocomplete source for each input field
+        $(document).on("focus", ".vehicle-doc-name-input", function() {
+            initAutocomplete(this);
+        });
+    });
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const container = document.getElementById('vehicleDocumentContainer');
+
+        function addNewVehicleRow() {
+            const lastRowIndex = parseInt(container.querySelector('[data-row-index]:last-of-type').getAttribute('data-row-index'));
+            const newRow = container.querySelector('[data-row-index="0"]').cloneNode(true);
+
+            // Update the data-row-index attribute
+            newRow.setAttribute('data-row-index', lastRowIndex + 1);
+
+            // Clear values in the new row
+            newRow.querySelector('[name^="inputVehicleDocName"]').value = '';
+            newRow.querySelector('[name^="inputVehicleDocNo"]').value = '';
+            newRow.querySelector('[name^="inputVehicleDocFile"]').value = '';
+
+            // Update the IDs and names of the inputs in the new row
+            const inputs = newRow.querySelectorAll('input');
+            inputs.forEach(function (input) {
+                const oldId = input.getAttribute('id');
+                const oldName = input.getAttribute('name');
+                const newId = oldId.replace(/\d+/, lastRowIndex + 1);
+                const newName = oldName.replace(/\d+/, lastRowIndex + 1);
+                input.setAttribute('id', newId);
+                input.setAttribute('name', newName);
+            });
+
+            // Replace the button with a remove button
+            const addButtonInNewRow = newRow.querySelector('.vehicleDocAddButton');
+            addButtonInNewRow.innerHTML = '-';
+            addButtonInNewRow.classList.remove('vehicleDocAddButton');
+            addButtonInNewRow.classList.add('vehicleDocRemoveButton');
+            addButtonInNewRow.classList.add('btn-danger'); // Add btn-danger class
+
+            container.querySelector('#vehicleDocumentRows').appendChild(newRow);
+        }
+
+        container.addEventListener('click', function (event) {
+            const target = event.target;
+            if (target.classList.contains('vehicleDocAddButton')) {
+                addNewVehicleRow();
+            } else if (target.classList.contains('vehicleDocRemoveButton')) {
+                target.closest('.row').remove();
+            }
+        });
+    });
+</script>
